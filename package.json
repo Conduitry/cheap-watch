@@ -1,6 +1,6 @@
 {
 	"name": "cheap-watch",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "If it works, why use something else?",
 	"keywords": ["async", "asynchronous", "file", "watch", "watcher"],
 	"main": "./dist/CheapWatch.cjs.js",
