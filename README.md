@@ -8,7 +8,7 @@ It began life as part of [Defiler](https://github.com/Conduitry/defiler) and was
 
 ## Constructor
 
-### `new CheapWatch({ dir, filter, watch = true, debounce = 10 })``
+### `new CheapWatch({ dir, filter, watch = true, debounce = 10 })`
 
 - `dir` - The directory whose contents to watch. It's recommended, though not required, for this to be an absolute path, say one returned by `path.resolve`.
 - `filter({ path, stats })` - _(optional)_ A function to decide whether a given file or directory should be watched. It's passed an object containing the file or directory's relative `path` and its `stats`. It should return `true` or `false` (or a `Promise` resolving to one of those). Returning `false` for a directory means that none of its contents will be watched. You can use `stats.isFile()` and `stats.isDirectory()` to determine whether this is a file or a directory.
