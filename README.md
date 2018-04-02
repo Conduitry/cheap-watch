@@ -4,40 +4,46 @@
 
 **Cheap Watch** is a small, simple, dependency-free, cross-platform file system watcher for Node.js 8+.
 
-It began life as part of [Defiler](https://github.com/Conduitry/defiler) and was then prettied up and extracted into its own library.
-
 ## Constructor
 
 ### `new CheapWatch({ dir, filter, watch = true, debounce = 10 })`
 
 - `dir` - The directory whose contents to watch. It's recommended, though not required, for this to be an absolute path, say one returned by `path.resolve`.
-- `filter({ path, stats })` - _(optional)_ A function to decide whether a given file or directory should be watched. It's passed an object containing the file or directory's relative `path` and its `stats`. It should return `true` or `false` (or a `Promise` resolving to one of those). Returning `false` for a directory means that none of its contents will be watched. You can use `stats.isFile()` and `stats.isDirectory()` to determine whether this is a file or a directory.
-- `watch` - _(optional)_ Whether to actually watch the directory for changes. Defaults to `true`. If `false`, you can retrieve all of the files within a given directory along with their `Stats` but changes will not actually be watched.
-- `debounce` - _(optional)_ Length of timeout in milliseconds to use to debounce incoming events from `fs.watch`. Defaults to 10. Multiple events are often emitted for a single change, and events can also be emitted before `fs.stat` reports the changes. Cheap Watch will wait until `debounce` milliseconds have passed since the last `fs.watch` event for a file before reporting it. The default of 10ms Works On My Machine.
+- `filter({ path, stats })` - _(optional)_ A function to decide whether a given file or directory should be watched. It's passed an object containing the file or directory's relative `path` and its `stats`. It should return `true` or `false` (or a `Promise` resolving to one of those). Returning `false` for a directory means that none of its contents will be watched.
+- `watch` - _(optional)_ Whether to actually watch the directory for changes. Defaults to `true`. If `false`, you can retrieve all of the files and directories within a given directory along with their `Stats` but changes will not actually be monitored.
+- `debounce` - _(optional)_ Length of timeout in milliseconds to use to debounce incoming events from `fs.watch`. Defaults to 10. Multiple events are often emitted for a single change, and events can also be emitted before `fs.stat` reports the changes. Cheap Watch will wait until `debounce` milliseconds have passed since the last `fs.watch` event for a file or directory before reporting it. The default of 10ms Works On My Machine.
 
 ## Methods
 
 ### `cheapWatch.init()`
 
-Initialize the watcher, traverse the directory to find the initial files, and set up watchers to look for changes.
+Initialize the watcher, traverse the directory to find the initial files and directories, and set up watchers to look for changes.
 
-This returns a `Promise` that resolves to an array of `{ path, stats }` object, one per file. `path` is a relative path from the `CheapWatch`'s `dir`, and `stats` is the `Stats` object for the file.
+This returns a `Promise` that resolves once the initial contents of the directory have been traversed and all of the watchers have been set up.
 
 ### `cheapWatch.close()`
 
 Close all `FSWatcher` instances, and stop watching for file changes.
 
+## Properties
+
+### `cheapWatch.files`
+
+A `Map` of the watched files and directories. Each key is a relative path from the `CheapWatch`'s `dir`, and each value is a `Stats` object for the file or directory. This is kept up to date as files are changed on disk.
+
+You can use `stats.isFile()` and `stats.isDirectory()` to determine whether something is a file or a directory.
+
 ## Events
 
-`CheapWatch` is a subclass of `EventEmitter`, and emits two events to report a new or update file or to report a deleted file.
+`CheapWatch` is a subclass of `EventEmitter`, and emits two events to report a new, updated, or deleted file or directory.
 
 ### `+` `{ path, stats }`
 
-A `+` event is emitted with an object containing a `path` string and a `stats` object whenever a watched file is created or updated.
+A `+` event is emitted with an object containing a `path` string and a `stats` object whenever a watched file or directory is created or updated.
 
-### `-` `{ path }`
+### `-` `{ path, stats }`
 
-A `-` event is emitted with an object containing a `path` string whenever a watched file is deleted.
+A `-` event is emitted with an object containing a `path` string and a `stats` object whenever a watched file or directory is deleted. `stats` will be the most recent `Stats` collected for the file or directory before it was deleted.
 
 ## Usage
 
@@ -46,10 +52,14 @@ import CheapWatch from 'cheap-watch';
 
 const watch = new CheapWatch({ dir, /* ... */ });
 
-const initialFiles = await watch.init();
+await watch.init();
+
+for (const [path, stats] of watch.files) {
+	/* ... */
+}
 
 watch.on('+', ({ path, stats }) => /* ... */ );
-watch.on('-', ({ path }) => /* ... */);
+watch.on('-', ({ path, stats }) => /* ... */);
 ```
 
 ## License
