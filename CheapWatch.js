@@ -6,7 +6,6 @@ const readdirAsync = promisify(readdir);
 const statAsync = promisify(stat);
 
 const _watchers = Symbol('_watchers');
-const _stats = Symbol('_stats');
 const _timeouts = Symbol('_timeouts');
 const _queue = Symbol('_queue');
 const _isProcessing = Symbol('_isProcessing');
@@ -29,8 +28,8 @@ export default class CheapWatch extends EventEmitter {
 		this.debounce = debounce;
 		// paths of all directories -> FSWatcher instances
 		this[_watchers] = new Map();
-		// paths of all files -> file stats
-		this[_stats] = new Map();
+		// paths of all files/dirs -> stats
+		this.files = new Map();
 		// paths of files with pending debounced events -> setTimeout timer ids
 		this[_timeouts] = new Map();
 		// queue of pending FSWatcher events to handle
@@ -51,10 +50,6 @@ export default class CheapWatch extends EventEmitter {
 		}
 		this[_isInited] = true;
 		await this[_recurse](this.dir);
-		return [...this[_stats].entries()].map(([path, stats]) => ({
-			path,
-			stats,
-		}));
 	}
 
 	// close all FSWatchers
@@ -78,9 +73,8 @@ export default class CheapWatch extends EventEmitter {
 		if (this.filter && !await this.filter({ path, stats })) {
 			return;
 		}
-		if (stats.isFile()) {
-			this[_stats].set(path, stats);
-		} else if (stats.isDirectory()) {
+		this.files.set(path, stats);
+		if (stats.isDirectory()) {
 			if (this.watch) {
 				this[_watchers].set(path, watch(full, this[_handle].bind(this, full)));
 			}
@@ -120,39 +114,39 @@ export default class CheapWatch extends EventEmitter {
 				if (this.filter && !await this.filter({ path, stats })) {
 					continue;
 				}
-				if (stats.isFile()) {
-					// note the new/changed file
-					this[_stats].set(path, stats);
-					this.emit('+', { path, stats });
-				} else if (stats.isDirectory() && !this[_watchers].has(path)) {
+				this.files.set(path, stats);
+				this.emit('+', { path, stats });
+				if (stats.isDirectory() && !this[_watchers].has(path)) {
 					// note the new directory
 					// start watching it, and report any files in it
 					await this[_recurse](full);
-					for (const [newPath, stats] of this[_stats].entries()) {
+					for (const [newPath, stats] of this.files.entries()) {
 						if (newPath.startsWith(path + '/')) {
 							this.emit('+', { path: newPath, stats });
 						}
 					}
 				}
 			} catch (e) {
-				// probably this was a deleted file/directory
-				if (this[_stats].has(path)) {
-					// note the deleted file
-					this[_stats].delete(path);
-					this.emit('-', { path });
-				} else if (this[_watchers].has(path)) {
-					// note the deleted directory
-					// stop watching it, and report any files that were in it
-					for (const old of this[_watchers].keys()) {
-						if (old === path || old.startsWith(path + '/')) {
-							this[_watchers].get(old).close();
-							this[_watchers].delete(old);
+				// check whether this is a deleted file/dir or just some FSWatcher artifact
+				if (this.files.has(path)) {
+					// note the deleted file/dir
+					const stats = this.files.get(path);
+					this.files.delete(path);
+					this.emit('-', { path, stats });
+					if (this[_watchers].has(path)) {
+						// stop watching it, and report any files/dirs that were in it
+						for (const old of this[_watchers].keys()) {
+							if (old === path || old.startsWith(path + '/')) {
+								this[_watchers].get(old).close();
+								this[_watchers].delete(old);
+							}
 						}
-					}
-					for (const old of this[_stats].keys()) {
-						if (old.startsWith(path + '/')) {
-							this[_stats].delete(old);
-							this.emit('-', { path: old });
+						for (const old of this.files.keys()) {
+							if (old.startsWith(path + '/')) {
+								const stats = this.files.get(old);
+								this.files.delete(old);
+								this.emit('-', { path: old, stats });
+							}
 						}
 					}
 				}
