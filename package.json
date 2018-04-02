@@ -1,0 +1,22 @@
+{
+	"name": "cheap-watch",
+	"version": "1.0.0",
+	"description": "If it works, why use something else?",
+	"keywords": ["async", "asynchronous", "file", "watch", "watcher"],
+	"main": "./dist/CheapWatch.cjs.js",
+	"module": "./CheapWatch.js",
+	"files": ["dist"],
+	"engines": {
+		"node": ">=8"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Conduitry/cheap-watch.git"
+	},
+	"author": "Conduitry",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Conduitry/cheap-watch/issues"
+	},
+	"homepage": "https://cndtr.io/cheap-watch/"
+}
