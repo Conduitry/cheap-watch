@@ -17,6 +17,18 @@ const _enqueue = Symbol('_enqueue');
 
 export default class CheapWatch extends EventEmitter {
 	constructor({ dir, filter, watch = true, debounce = 10 }) {
+		if (typeof dir !== 'string') {
+			throw new TypeError('CheapWatch: dir must be a string');
+		}
+		if (filter && typeof filter !== 'function') {
+			throw new TypeError('CheapWatch: filter must be a function');
+		}
+		if (typeof watch !== 'boolean') {
+			throw new TypeError('CheapWatch: watch must be a boolean');
+		}
+		if (typeof debounce !== 'number') {
+			throw new TypeError('CheapWatch: debounce must be a number');
+		}
 		super();
 		// root directory
 		this.dir = dir;
@@ -46,7 +58,7 @@ export default class CheapWatch extends EventEmitter {
 	// returns array of { path, stats }
 	async init() {
 		if (this[_isInited]) {
-			throw new Error('Cannot init a CheapWatch that has already been inited');
+			throw new Error('CheapWatch.init: Cannot be called twice');
 		}
 		this[_isInited] = true;
 		await this[_recurse](this.dir);
@@ -55,10 +67,10 @@ export default class CheapWatch extends EventEmitter {
 	// close all FSWatchers
 	close() {
 		if (!this[_isInited]) {
-			throw new Error('Cannot close a CheapWatch that has not yet been inited');
+			throw new Error('CheapWatch.close: Cannot call before CheapWatch.init');
 		}
 		if (this[_isClosed]) {
-			throw new Error('Cannot close a CheapWatch that has already been closed');
+			throw new Error('CheapWatch.close: Cannot be called twice');
 		}
 		this[_isClosed] = true;
 		for (const watcher of this[_watchers].values()) {
