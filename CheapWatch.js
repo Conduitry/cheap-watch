@@ -76,7 +76,10 @@ export default class CheapWatch extends EventEmitter {
 		this.files.set(path, stats);
 		if (stats.isDirectory()) {
 			if (this.watch) {
-				this[_watchers].set(path, watch(full, this[_handle].bind(this, full)));
+				this[_watchers].set(
+					path,
+					watch(full, this[_handle].bind(this, full)).on('error', () => {}),
+				);
 			}
 			await Promise.all(
 				(await readdirAsync(full)).map(sub => this[_recurse](full + '/' + sub)),
