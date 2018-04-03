@@ -45,6 +45,7 @@ function getEvents(watcher) {
 	await mkdir('bar');
 	await writeFile('bar/baz', '');
 	await watcher.init();
+	assert(watcher.files.size === 3);
 	assert(watcher.files.get('foo').isFile());
 	assert(watcher.files.get('bar').isDirectory());
 	assert(watcher.files.get('bar/baz').isFile());
