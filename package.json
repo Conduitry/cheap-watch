@@ -33,6 +33,8 @@
 	},
 	"scripts": {
 		"build": "rollup -c",
-		"test": "npm run build && node test.js"
+		"pretest": "npm run build",
+		"test": "node test.js",
+		"prepublishOnly": "npm test"
 	}
 }
