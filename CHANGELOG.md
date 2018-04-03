@@ -1,3 +1,7 @@
+# v0.2.2
+
+- Rollup was erroneously added as a dependency and is now a dev dependency as it should be
+
 # v0.2.1
 
 - Add some more type checking
