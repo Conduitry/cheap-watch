@@ -2,10 +2,19 @@
 	"name": "cheap-watch",
 	"version": "0.2.0",
 	"description": "If it works, why use something else?",
-	"keywords": ["async", "asynchronous", "file", "watch", "watcher"],
+	"keywords": [
+		"async",
+		"asynchronous",
+		"file",
+		"watch",
+		"watcher"
+	],
 	"main": "./dist/CheapWatch.cjs.js",
 	"module": "./CheapWatch.js",
-	"files": ["CheapWatch.js", "dist"],
+	"files": [
+		"CheapWatch.js",
+		"dist"
+	],
 	"engines": {
 		"node": ">=8"
 	},
@@ -18,5 +27,11 @@
 	"bugs": {
 		"url": "https://github.com/Conduitry/cheap-watch/issues"
 	},
-	"homepage": "https://cndtr.io/cheap-watch/"
+	"homepage": "https://cndtr.io/cheap-watch/",
+	"dependencies": {
+		"rollup": "*"
+	},
+	"scripts": {
+		"build": "rollup -c"
+	}
 }
