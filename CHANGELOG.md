@@ -1,3 +1,8 @@
+# v0.2.1
+
+- Add some more type checking
+- Ignore `error` events from `FSWatcher`, as Windows seems to like emitting these sometimes
+
 # v0.2.0
 
 - Report directory stats and events
