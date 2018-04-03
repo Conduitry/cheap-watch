@@ -45,45 +45,45 @@ function getEvents(watcher) {
 	await mkdir('bar');
 	await writeFile('bar/baz', '');
 	await watcher.init();
-	assert(watcher.files.size === 3);
-	assert(watcher.files.get('foo').isFile());
-	assert(watcher.files.get('bar').isDirectory());
-	assert(watcher.files.get('bar/baz').isFile());
+	assert.equal(watcher.files.size, 3);
+	assert.ok(watcher.files.get('foo').isFile());
+	assert.ok(watcher.files.get('bar').isDirectory());
+	assert.ok(watcher.files.get('bar/baz').isFile());
 
 	await writeFile('foo', 'foo');
 	await sleep();
-	assert(events.has('+f foo'));
+	assert.ok(events.has('+f foo'));
 	events.clear();
 
 	await writeFile('bar/qux', 'qux');
 	await sleep();
-	assert(events.has('+f bar/qux'));
-	assert(events.has('+d bar'));
+	assert.ok(events.has('+f bar/qux'));
+	assert.ok(events.has('+d bar'));
 	events.clear();
 
 	await rmdir('bar');
 	await sleep();
-	assert(events.has('-d bar'));
-	assert(events.has('-f bar/baz'));
-	assert(events.has('-f bar/qux'));
+	assert.ok(events.has('-d bar'));
+	assert.ok(events.has('-f bar/baz'));
+	assert.ok(events.has('-f bar/qux'));
 	events.clear();
 
 	await unlink('foo');
 	await sleep();
-	assert(events.has('-f foo'));
+	assert.ok(events.has('-f foo'));
 	events.clear();
 
 	await Promise.all([writeFile('foo', ''), writeFile('bar', '')]);
 	await sleep();
-	assert(events.has('+f foo'));
-	assert(events.has('+f bar'));
+	assert.ok(events.has('+f foo'));
+	assert.ok(events.has('+f bar'));
 	events.clear();
 
 	watcher.close();
 
 	await writeFile('foo', '');
 	await sleep();
-	assert(events.size === 0);
+	assert.equal(events.size, 0);
 
 	const watcher2 = new CheapWatch({
 		dir: process.cwd(),
@@ -97,20 +97,20 @@ function getEvents(watcher) {
 
 	await writeFile('skip-file', '');
 	await sleep();
-	assert(events2.size === 0);
+	assert.equal(events2.size, 0);
 
 	await writeFile('foo', '');
 	await sleep();
-	assert(events2.has('+f foo'));
+	assert.ok(events2.has('+f foo'));
 	events2.clear();
 
 	await mkdir('skip-directory');
 	await sleep();
-	assert(events2.size === 0);
+	assert.equal(events2.size, 0);
 
 	await writeFile('skip-directory/foo', '');
 	await sleep();
-	assert(events2.size === 0);
+	assert.equal(events2.size, 0);
 
 	watcher2.close();
 
