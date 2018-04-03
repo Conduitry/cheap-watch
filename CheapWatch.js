@@ -82,10 +82,12 @@ export default class CheapWatch extends EventEmitter {
 	async [_recurse](full) {
 		const path = full.slice(this.dir.length + 1);
 		const stats = await statAsync(full);
-		if (this.filter && !await this.filter({ path, stats })) {
-			return;
+		if (path) {
+			if (this.filter && !await this.filter({ path, stats })) {
+				return;
+			}
+			this.files.set(path, stats);
 		}
-		this.files.set(path, stats);
 		if (stats.isDirectory()) {
 			if (this.watch) {
 				this[_watchers].set(
