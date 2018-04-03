@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 const CheapWatch = require('.');
 
 const assert = require('assert');
@@ -16,7 +18,7 @@ const rmdir =
 				exec(`rmdir /s /q ${path.replace(/\//g, '\\')} 2> nul`).catch(() => {})
 		: path => exec('rm -rf ' + path);
 
-const sleep = ms => new Promise(res => setTimeout(res, ms));
+const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
 
 (async () => {
 	process.chdir(__dirname);
@@ -43,24 +45,39 @@ const sleep = ms => new Promise(res => setTimeout(res, ms));
 	assert(watcher.files.get('bar/baz').isFile());
 
 	await writeFile('foo', 'foo');
-	await sleep(50);
+	await sleep();
 	assert(events.has('+f foo'));
 	events.clear();
 
 	await writeFile('bar/qux', 'qux');
-	await sleep(50);
+	await sleep();
 	assert(events.has('+f bar/qux'));
 	assert(events.has('+d bar'));
 	events.clear();
 
 	await rmdir('bar');
-	await sleep(50);
+	await sleep();
 	assert(events.has('-d bar'));
 	assert(events.has('-f bar/baz'));
 	assert(events.has('-f bar/qux'));
 	events.clear();
 
+	await unlink('foo');
+	await sleep();
+	assert(events.has('-f foo'));
+	events.clear();
+
+	await Promise.all([writeFile('foo', ''), writeFile('bar', '')]);
+	await sleep();
+	assert(events.has('+f foo'));
+	assert(events.has('+f bar'));
+	events.clear();
+
 	watcher.close();
+
+	await writeFile('foo', '');
+	await sleep();
+	assert(events.size === 0);
 
 	console.log('tests successful!');
 
