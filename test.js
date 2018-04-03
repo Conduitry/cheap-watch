@@ -20,6 +20,16 @@ const rmdir =
 
 const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
 
+function getEvents(watcher) {
+	const events = new Set();
+	for (const event of ['+', '-']) {
+		watcher.on(event, ({ path, stats }) => {
+			events.add(event + (stats.isFile() ? 'f ' : 'd ') + path);
+		});
+	}
+	return events;
+}
+
 (async () => {
 	process.chdir(__dirname);
 	await rmdir('test');
@@ -29,12 +39,7 @@ const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
 	console.log('running tests ...');
 
 	const watcher = new CheapWatch({ dir: process.cwd() });
-	const events = new Set();
-	for (const event of ['+', '-']) {
-		watcher.on(event, ({ path, stats }) => {
-			events.add(event + (stats.isFile() ? 'f ' : 'd ') + path);
-		});
-	}
+	const events = getEvents(watcher);
 
 	await writeFile('foo', '');
 	await mkdir('bar');
@@ -78,6 +83,35 @@ const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
 	await writeFile('foo', '');
 	await sleep();
 	assert(events.size === 0);
+
+	const watcher2 = new CheapWatch({
+		dir: process.cwd(),
+		filter: ({ path, stats }) =>
+			(stats.isFile() && !path.includes('skip-file')) ||
+			(stats.isDirectory() && !path.includes('skip-directory')),
+	});
+	const events2 = getEvents(watcher2);
+
+	await watcher2.init();
+
+	await writeFile('skip-file', '');
+	await sleep();
+	assert(events2.size === 0);
+
+	await writeFile('foo', '');
+	await sleep();
+	assert(events2.has('+f foo'));
+	events2.clear();
+
+	await mkdir('skip-directory');
+	await sleep();
+	assert(events2.size === 0);
+
+	await writeFile('skip-directory/foo', '');
+	await sleep();
+	assert(events2.size === 0);
+
+	watcher2.close();
 
 	console.log('tests successful!');
 
