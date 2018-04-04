@@ -15,19 +15,19 @@
 
 ## Methods
 
-### `cheapWatch.init()`
+### `init()`
 
 Initialize the watcher, traverse the directory to find the initial files and directories, and set up watchers to look for changes.
 
 This returns a `Promise` that resolves once the initial contents of the directory have been traversed and all of the watchers have been set up.
 
-### `cheapWatch.close()`
+### `close()`
 
 Close all `FSWatcher` instances, and stop watching for file changes.
 
 ## Properties
 
-### `cheapWatch.paths`
+### `paths`
 
 A `Map` of the watched files and directories. Each key is a relative path from the `CheapWatch`'s `dir`, and each value is a `Stats` object for the file or directory. Paths are always separated by forward slashes, regardless of platform. This `Map` is kept up to date as files are changed on disk.
 
@@ -50,16 +50,16 @@ A `-` event is emitted with an object containing a `path` string and a `stats` o
 ```javascript
 import CheapWatch from 'cheap-watch';
 
-const watcher = new CheapWatch({ dir, /* ... */ });
+const watch = new CheapWatch({ dir, /* ... */ });
 
-await watcher.init();
+await watch.init();
 
-for (const [path, stats] of watcher.paths) {
+for (const [path, stats] of watch.paths) {
 	/* ... */
 }
 
-watcher.on('+', ({ path, stats }) => { /* ... */ });
-watcher.on('-', ({ path, stats }) => { /* ... */ });
+watch.on('+', ({ path, stats }) => { /* ... */ });
+watch.on('-', ({ path, stats }) => { /* ... */ });
 ```
 
 ## License

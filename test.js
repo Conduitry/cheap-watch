@@ -20,10 +20,10 @@ const rmdir =
 
 const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
 
-function getEvents(watcher) {
+function getEvents(watch) {
 	const events = new Set();
 	for (const event of ['+', '-']) {
-		watcher.on(event, ({ path, stats }) => {
+		watch.on(event, ({ path, stats }) => {
 			events.add(event + (stats.isFile() ? 'f ' : 'd ') + path);
 		});
 	}
@@ -38,17 +38,17 @@ function getEvents(watcher) {
 
 	console.log('running tests ...');
 
-	const watcher = new CheapWatch({ dir: process.cwd() });
-	const events = getEvents(watcher);
+	const watch = new CheapWatch({ dir: process.cwd() });
+	const events = getEvents(watch);
 
 	await writeFile('foo', '');
 	await mkdir('bar');
 	await writeFile('bar/baz', '');
-	await watcher.init();
-	assert.equal(watcher.paths.size, 3);
-	assert.ok(watcher.paths.get('foo').isFile());
-	assert.ok(watcher.paths.get('bar').isDirectory());
-	assert.ok(watcher.paths.get('bar/baz').isFile());
+	await watch.init();
+	assert.equal(watch.paths.size, 3);
+	assert.ok(watch.paths.get('foo').isFile());
+	assert.ok(watch.paths.get('bar').isDirectory());
+	assert.ok(watch.paths.get('bar/baz').isFile());
 
 	await writeFile('foo', 'foo');
 	await sleep();
@@ -79,21 +79,21 @@ function getEvents(watcher) {
 	assert.ok(events.has('+f bar'));
 	events.clear();
 
-	watcher.close();
+	watch.close();
 
 	await writeFile('foo', '');
 	await sleep();
 	assert.equal(events.size, 0);
 
-	const watcher2 = new CheapWatch({
+	const watch2 = new CheapWatch({
 		dir: process.cwd(),
 		filter: ({ path, stats }) =>
 			(stats.isFile() && !path.includes('skip-file')) ||
 			(stats.isDirectory() && !path.includes('skip-directory')),
 	});
-	const events2 = getEvents(watcher2);
+	const events2 = getEvents(watch2);
 
-	await watcher2.init();
+	await watch2.init();
 
 	await writeFile('skip-file', '');
 	await sleep();
@@ -112,7 +112,7 @@ function getEvents(watcher) {
 	await sleep();
 	assert.equal(events2.size, 0);
 
-	watcher2.close();
+	watch2.close();
 
 	console.log('tests successful!');
 
