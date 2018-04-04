@@ -18,21 +18,21 @@ const _enqueue = Symbol('_enqueue');
 export default class CheapWatch extends EventEmitter {
 	constructor({ dir, filter, watch = true, debounce = 10 }) {
 		if (typeof dir !== 'string') {
-			throw new TypeError('CheapWatch: dir must be a string');
+			throw new TypeError('dir must be a string');
 		}
 		if (filter && typeof filter !== 'function') {
-			throw new TypeError('CheapWatch: filter must be a function');
+			throw new TypeError('filter must be a function');
 		}
 		if (typeof watch !== 'boolean') {
-			throw new TypeError('CheapWatch: watch must be a boolean');
+			throw new TypeError('watch must be a boolean');
 		}
 		if (typeof debounce !== 'number') {
-			throw new TypeError('CheapWatch: debounce must be a number');
+			throw new TypeError('debounce must be a number');
 		}
 		super();
 		// root directory
 		this.dir = dir;
-		// (optonal) function to limit watching to certain directories/files
+		// (optional) function to limit watching to certain directories/files
 		this.filter = filter;
 		// (optional) whether to actually watch for changes, or just report all matching files and their stats
 		this.watch = watch;
@@ -54,11 +54,10 @@ export default class CheapWatch extends EventEmitter {
 		this[_isClosed] = false;
 	}
 
-	// recurse directroy, get stats, set up FSWatcher instances
-	// returns array of { path, stats }
+	// recurse directory, get stats, set up FSWatcher instances
 	async init() {
 		if (this[_isInited]) {
-			throw new Error('CheapWatch.init: Cannot be called twice');
+			throw new Error('cannot call init() twice');
 		}
 		this[_isInited] = true;
 		await this[_recurse](this.dir);
@@ -67,10 +66,10 @@ export default class CheapWatch extends EventEmitter {
 	// close all FSWatchers
 	close() {
 		if (!this[_isInited]) {
-			throw new Error('CheapWatch.close: Cannot call before CheapWatch.init');
+			throw new Error('cannot call close() before init()');
 		}
 		if (this[_isClosed]) {
-			throw new Error('CheapWatch.close: Cannot be called twice');
+			throw new Error('cannot call close() twice');
 		}
 		this[_isClosed] = true;
 		for (const watcher of this[_watchers].values()) {
