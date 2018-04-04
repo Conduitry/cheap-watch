@@ -125,8 +125,8 @@ export default class CheapWatch extends EventEmitter {
 		while (this[_queue].length) {
 			const full = this[_queue].shift();
 			const path = full.slice(this.dir.length + 1);
-			try {
-				const stats = await statAsync(full);
+			const stats = await statAsync(full).catch(() => {});
+			if (stats) {
 				if (this.filter && !await this.filter({ path, stats })) {
 					continue;
 				}
@@ -145,27 +145,24 @@ export default class CheapWatch extends EventEmitter {
 						}
 					}
 				}
-			} catch (e) {
-				// check whether this is a deleted file/dir or just some FSWatcher artifact
-				if (this.paths.has(path)) {
-					// note the deleted file/dir
-					const stats = this.paths.get(path);
-					this.paths.delete(path);
-					this.emit('-', { path, stats });
-					if (this[_watchers].has(path)) {
-						// stop watching it, and report any files/dirs that were in it
-						for (const old of this[_watchers].keys()) {
-							if (old === path || old.startsWith(path + '/')) {
-								this[_watchers].get(old).close();
-								this[_watchers].delete(old);
-							}
+			} else if (this.paths.has(path)) {
+				// note the deleted file/dir
+				const stats = this.paths.get(path);
+				this.paths.delete(path);
+				this.emit('-', { path, stats });
+				if (this[_watchers].has(path)) {
+					// stop watching it, and report any files/dirs that were in it
+					for (const old of this[_watchers].keys()) {
+						if (old === path || old.startsWith(path + '/')) {
+							this[_watchers].get(old).close();
+							this[_watchers].delete(old);
 						}
-						for (const old of this.paths.keys()) {
-							if (old.startsWith(path + '/')) {
-								const stats = this.paths.get(old);
-								this.paths.delete(old);
-								this.emit('-', { path: old, stats });
-							}
+					}
+					for (const old of this.paths.keys()) {
+						if (old.startsWith(path + '/')) {
+							const stats = this.paths.get(old);
+							this.paths.delete(old);
+							this.emit('-', { path: old, stats });
 						}
 					}
 				}
