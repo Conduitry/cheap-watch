@@ -22,11 +22,24 @@ const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
 
 function getEvents(watch) {
 	const events = new Set();
-	for (const event of ['+', '-']) {
-		watch.on(event, ({ path, stats }) => {
-			events.add(event + (stats.isFile() ? 'f ' : 'd ') + path);
-		});
-	}
+	watch.on('+', ({ path, stats, isNew }) => {
+		const event = `${isNew ? 'new' : 'updated'} ${
+			stats.isFile() ? 'file' : ''
+		}${stats.isDirectory() ? 'directory' : ''} ${path}`;
+		if (events.has(event)) {
+			throw new Error(`Duplicate event: ${event}`);
+		}
+		events.add(event);
+	});
+	watch.on('-', ({ path, stats }) => {
+		const event = `deleted ${stats.isFile() ? 'file' : ''}${
+			stats.isDirectory() ? 'directory' : ''
+		} ${path}`;
+		if (events.has(event)) {
+			throw new Error(`Duplicate event: ${event}`);
+		}
+		events.add(event);
+	});
 	return events;
 }
 
@@ -50,33 +63,33 @@ function getEvents(watch) {
 	assert.ok(watch.paths.get('bar').isDirectory());
 	assert.ok(watch.paths.get('bar/baz').isFile());
 
-	await writeFile('foo', 'foo');
+	await writeFile('foo', '');
 	await sleep();
-	assert.ok(events.has('+f foo'));
+	assert.ok(events.has('updated file foo'));
 	events.clear();
 
-	await writeFile('bar/qux', 'qux');
+	await writeFile('bar/qux', '');
 	await sleep();
-	assert.ok(events.has('+f bar/qux'));
-	assert.ok(events.has('+d bar'));
+	assert.ok(events.has('new file bar/qux'));
+	assert.ok(events.has('updated directory bar'));
 	events.clear();
 
 	await rmdir('bar');
 	await sleep();
-	assert.ok(events.has('-d bar'));
-	assert.ok(events.has('-f bar/baz'));
-	assert.ok(events.has('-f bar/qux'));
+	assert.ok(events.has('deleted directory bar'));
+	assert.ok(events.has('deleted file bar/baz'));
+	assert.ok(events.has('deleted file bar/qux'));
 	events.clear();
 
 	await unlink('foo');
 	await sleep();
-	assert.ok(events.has('-f foo'));
+	assert.ok(events.has('deleted file foo'));
 	events.clear();
 
 	await Promise.all([writeFile('foo', ''), writeFile('bar', '')]);
 	await sleep();
-	assert.ok(events.has('+f foo'));
-	assert.ok(events.has('+f bar'));
+	assert.ok(events.has('new file foo'));
+	assert.ok(events.has('new file bar'));
 	events.clear();
 
 	watch.close();
@@ -101,7 +114,7 @@ function getEvents(watch) {
 
 	await writeFile('foo', '');
 	await sleep();
-	assert.ok(events2.has('+f foo'));
+	assert.ok(events2.has('updated file foo'));
 	events2.clear();
 
 	await mkdir('skip-directory');
