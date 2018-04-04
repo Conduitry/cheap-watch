@@ -1,3 +1,10 @@
+# v0.3.0
+
+- Rename `.files` to `.paths`, as it contains directories, not just files
+- Include an additional `isNew` boolean in `+` events, indicating whether this is a new or an updated file/directory
+- No longer call the `filter` function on the root watched directory
+- No longer include the root watched directory under the `''` in the `Map`, nor emit `+` events for it
+
 # v0.2.2
 
 - Rollup was erroneously added as a dependency and is now a dev dependency as it should be
