@@ -9,6 +9,7 @@ const util = require('util');
 
 const exec = util.promisify(child_process.exec);
 const mkdir = util.promisify(fs.mkdir);
+const rename = util.promisify(fs.rename);
 const unlink = util.promisify(fs.unlink);
 const writeFile = util.promisify(fs.writeFile);
 
@@ -124,6 +125,28 @@ function getEvents(watch) {
 	await writeFile('skip-directory/foo', '');
 	await sleep();
 	assert.equal(events2.size, 0);
+
+	await mkdir('included-directory');
+	await sleep();
+	assert.ok(events2.has('new directory included-directory'));
+	await writeFile('included-directory/foo', '');
+	await sleep();
+	events2.clear();
+
+	await rename('included-directory/foo', 'included-directory/foo-2');
+	await sleep();
+	assert.ok(events2.has('deleted file included-directory/foo'));
+	assert.ok(events2.has('new file included-directory/foo-2'));
+	assert.ok(events2.has('updated directory included-directory'));
+	events2.clear();
+
+	await rename('included-directory', 'included-directory-2');
+	await sleep();
+	assert.ok(events2.has('deleted directory included-directory'));
+	assert.ok(events2.has('deleted file included-directory/foo-2'));
+	assert.ok(events2.has('new directory included-directory-2'));
+	assert.ok(events2.has('new file included-directory-2/foo-2'));
+	events2.clear();
 
 	watch2.close();
 
