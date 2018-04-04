@@ -131,15 +131,16 @@ export default class CheapWatch extends EventEmitter {
 				if (this.filter && !await this.filter({ path, stats })) {
 					continue;
 				}
+				const isNew = !this.paths.has(path);
 				this.paths.set(path, stats);
-				this.emit('+', { path, stats });
+				this.emit('+', { path, stats, isNew });
 				if (stats.isDirectory() && !this[_watchers].has(path)) {
 					// note the new directory
 					// start watching it, and report any files in it
 					await this[_recurse](full);
 					for (const [newPath, stats] of this.paths.entries()) {
 						if (newPath.startsWith(path + '/')) {
-							this.emit('+', { path: newPath, stats });
+							this.emit('+', { path: newPath, stats, isNew: true });
 						}
 					}
 				}
