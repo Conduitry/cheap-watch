@@ -5,6 +5,10 @@ import { promisify } from 'util';
 const readdirAsync = promisify(readdir);
 const statAsync = promisify(stat);
 
+const _dir = Symbol('_dir');
+const _filter = Symbol('_filter');
+const _watch = Symbol('_watch');
+const _debounce = Symbol('_debounce');
 const _watchers = Symbol('_watchers');
 const _paths = Symbol('_paths');
 const _timeouts = Symbol('_timeouts');
@@ -32,13 +36,13 @@ export default class CheapWatch extends EventEmitter {
 		}
 		super();
 		// root directory
-		this.dir = dir;
+		this[_dir] = dir;
 		// (optional) function to limit watching to certain directories/files
-		this.filter = filter;
+		this[_filter] = filter;
 		// (optional) whether to actually watch for changes, or just report all matching files and their stats
-		this.watch = watch;
+		this[_watch] = watch;
 		// (optional) number of milliseconds to use to debounce events from FSWatcher
-		this.debounce = debounce;
+		this[_debounce] = debounce;
 		// paths of all directories -> FSWatcher instances
 		this[_watchers] = new Map();
 		// paths of all files/dirs -> stats
@@ -61,7 +65,7 @@ export default class CheapWatch extends EventEmitter {
 			throw new Error('cannot call init() twice');
 		}
 		this[_isInitStarted] = true;
-		await this[_recurse](this.dir);
+		await this[_recurse](this[_dir]);
 		this.paths = this[_paths];
 	}
 
@@ -81,16 +85,16 @@ export default class CheapWatch extends EventEmitter {
 
 	// recurse a given directory
 	async [_recurse](full) {
-		const path = full.slice(this.dir.length + 1);
+		const path = full.slice(this[_dir].length + 1);
 		const stats = await statAsync(full);
 		if (path) {
-			if (this.filter && !await this.filter({ path, stats })) {
+			if (this[_filter] && !await this[_filter]({ path, stats })) {
 				return;
 			}
 			this[_paths].set(path, stats);
 		}
 		if (stats.isDirectory()) {
-			if (this.watch) {
+			if (this[_watch]) {
 				this[_watchers].set(
 					path,
 					watch(full, this[_handle].bind(this, full)).on('error', () => {}),
@@ -113,23 +117,23 @@ export default class CheapWatch extends EventEmitter {
 			setTimeout(() => {
 				this[_timeouts].delete(full);
 				this[_enqueue](full);
-			}, this.debounce),
+			}, this[_debounce]),
 		);
 	}
 
 	// add an FSWatcher event to the queue, and handle queued events
 	async [_enqueue](full) {
 		this[_queue].push(full);
-		if (this[_isProcessing] || !this.paths) {
+		if (this[_isProcessing] || !this[_paths]) {
 			return;
 		}
 		this[_isProcessing] = true;
 		while (this[_queue].length) {
 			const full = this[_queue].shift();
-			const path = full.slice(this.dir.length + 1);
+			const path = full.slice(this[_dir].length + 1);
 			const stats = await statAsync(full).catch(() => {});
 			if (stats) {
-				if (this.filter && !await this.filter({ path, stats })) {
+				if (this[_filter] && !await this[_filter]({ path, stats })) {
 					continue;
 				}
 				const isNew = !this.paths.has(path);
