@@ -6,10 +6,11 @@ const readdirAsync = promisify(readdir);
 const statAsync = promisify(stat);
 
 const _watchers = Symbol('_watchers');
+const _paths = Symbol('_paths');
 const _timeouts = Symbol('_timeouts');
 const _queue = Symbol('_queue');
 const _isProcessing = Symbol('_isProcessing');
-const _isInited = Symbol('_isInited');
+const _isInitStarted = Symbol('_isInitStarted');
 const _isClosed = Symbol('_isClosed');
 const _recurse = Symbol('_recurse');
 const _handle = Symbol('_handle');
@@ -41,32 +42,33 @@ export default class CheapWatch extends EventEmitter {
 		// paths of all directories -> FSWatcher instances
 		this[_watchers] = new Map();
 		// paths of all files/dirs -> stats
-		this.paths = new Map();
-		// paths of files with pending debounced events -> setTimeout timer ids
+		this[_paths] = new Map();
+		// paths of files/dirs with pending debounced events -> setTimeout timer ids
 		this[_timeouts] = new Map();
 		// queue of pending FSWatcher events to handle
 		this[_queue] = [];
 		// whether some FSWatcher event is currently already in the process of being handled
 		this[_isProcessing] = false;
 		// whether init has been called
-		this[_isInited] = false;
+		this[_isInitStarted] = false;
 		// whether close has been called
 		this[_isClosed] = false;
 	}
 
 	// recurse directory, get stats, set up FSWatcher instances
 	async init() {
-		if (this[_isInited]) {
+		if (this[_isInitStarted]) {
 			throw new Error('cannot call init() twice');
 		}
-		this[_isInited] = true;
+		this[_isInitStarted] = true;
 		await this[_recurse](this.dir);
+		this.paths = this[_paths];
 	}
 
 	// close all FSWatchers
 	close() {
-		if (!this[_isInited]) {
-			throw new Error('cannot call close() before init()');
+		if (!this.paths) {
+			throw new Error('cannot call close() before init() finishes');
 		}
 		if (this[_isClosed]) {
 			throw new Error('cannot call close() twice');
@@ -85,7 +87,7 @@ export default class CheapWatch extends EventEmitter {
 			if (this.filter && !await this.filter({ path, stats })) {
 				return;
 			}
-			this.paths.set(path, stats);
+			this[_paths].set(path, stats);
 		}
 		if (stats.isDirectory()) {
 			if (this.watch) {
@@ -118,7 +120,7 @@ export default class CheapWatch extends EventEmitter {
 	// add an FSWatcher event to the queue, and handle queued events
 	async [_enqueue](full) {
 		this[_queue].push(full);
-		if (this[_isProcessing]) {
+		if (this[_isProcessing] || !this.paths) {
 			return;
 		}
 		this[_isProcessing] = true;
