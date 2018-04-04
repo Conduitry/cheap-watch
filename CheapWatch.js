@@ -133,7 +133,9 @@ export default class CheapWatch extends EventEmitter {
 				}
 				const isNew = !this.paths.has(path);
 				this.paths.set(path, stats);
-				this.emit('+', { path, stats, isNew });
+				if (path) {
+					this.emit('+', { path, stats, isNew });
+				}
 				if (stats.isDirectory() && !this[_watchers].has(path)) {
 					// note the new directory
 					// start watching it, and report any files in it
