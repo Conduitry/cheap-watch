@@ -37,13 +37,13 @@ You can use `stats.isFile()` and `stats.isDirectory()` to determine whether some
 
 A `CheapWatch` is an `EventEmitter`, and emits two events to report a new, updated, or deleted file or directory.
 
-### `+` `{ path, stats }`
+### `+` `{ path, stats, isNew }`
 
-A `+` event is emitted with an object containing a `path` string and a `stats` object whenever a watched file or directory is created or updated.
+A `+` event is emitted whenever a watched file or directory is created or updated. It's emitted with an object containing a `path` string, a `stats` object, and an `isNew` boolean which will be `true` for newly created files and directories and `false` for updated ones.
 
 ### `-` `{ path, stats }`
 
-A `-` event is emitted with an object containing a `path` string and a `stats` object whenever a watched file or directory is deleted. `stats` will be the most recent `Stats` collected for the file or directory before it was deleted.
+A `-` event is emitted whenever a watched file or directory is deleted. It's emitted with an object containing a `path` string and a `stats` object. `stats` will be the most recent `Stats` collected for the file or directory before it was deleted.
 
 ## Usage
 
