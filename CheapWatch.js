@@ -1,9 +1,9 @@
 import EventEmitter from 'events';
-import { readdir, stat, watch } from 'fs';
+import * as fs from 'fs';
 import { promisify } from 'util';
 
-const readdirAsync = promisify(readdir);
-const statAsync = promisify(stat);
+const readdir = promisify(fs.readdir);
+const stat = promisify(fs.stat);
 
 const _dir = Symbol('_dir');
 const _filter = Symbol('_filter');
@@ -86,7 +86,7 @@ export default class CheapWatch extends EventEmitter {
 	// recurse a given directory
 	async [_recurse](full) {
 		const path = full.slice(this[_dir].length + 1);
-		const stats = await statAsync(full);
+		const stats = await stat(full);
 		if (path) {
 			if (this[_filter] && !await this[_filter]({ path, stats })) {
 				return;
@@ -97,11 +97,11 @@ export default class CheapWatch extends EventEmitter {
 			if (this[_watch]) {
 				this[_watchers].set(
 					path,
-					watch(full, this[_handle].bind(this, full)).on('error', () => {}),
+					fs.watch(full, this[_handle].bind(this, full)).on('error', () => {}),
 				);
 			}
 			await Promise.all(
-				(await readdirAsync(full)).map(sub => this[_recurse](full + '/' + sub)),
+				(await readdir(full)).map(sub => this[_recurse](full + '/' + sub)),
 			);
 		}
 	}
@@ -131,7 +131,7 @@ export default class CheapWatch extends EventEmitter {
 		while (this[_queue].length) {
 			const full = this[_queue].shift();
 			const path = full.slice(this[_dir].length + 1);
-			const stats = await statAsync(full).catch(() => {});
+			const stats = await stat(full).catch(() => {});
 			if (stats) {
 				if (this[_filter] && !await this[_filter]({ path, stats })) {
 					continue;
