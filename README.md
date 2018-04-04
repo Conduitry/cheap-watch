@@ -27,7 +27,7 @@ Close all `FSWatcher` instances, and stop watching for file changes.
 
 ## Properties
 
-### `cheapWatch.files`
+### `cheapWatch.paths`
 
 A `Map` of the watched files and directories. Each key is a relative path from the `CheapWatch`'s `dir`, and each value is a `Stats` object for the file or directory. Paths are always separated by forward slashes, regardless of platform. This `Map` is kept up to date as files are changed on disk.
 
@@ -54,7 +54,7 @@ const watcher = new CheapWatch({ dir, /* ... */ });
 
 await watcher.init();
 
-for (const [path, stats] of watcher.files) {
+for (const [path, stats] of watcher.paths) {
 	/* ... */
 }
 

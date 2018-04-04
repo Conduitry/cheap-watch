@@ -45,10 +45,10 @@ function getEvents(watcher) {
 	await mkdir('bar');
 	await writeFile('bar/baz', '');
 	await watcher.init();
-	assert.equal(watcher.files.size, 3);
-	assert.ok(watcher.files.get('foo').isFile());
-	assert.ok(watcher.files.get('bar').isDirectory());
-	assert.ok(watcher.files.get('bar/baz').isFile());
+	assert.equal(watcher.paths.size, 3);
+	assert.ok(watcher.paths.get('foo').isFile());
+	assert.ok(watcher.paths.get('bar').isDirectory());
+	assert.ok(watcher.paths.get('bar/baz').isFile());
 
 	await writeFile('foo', 'foo');
 	await sleep();

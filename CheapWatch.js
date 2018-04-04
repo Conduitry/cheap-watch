@@ -41,7 +41,7 @@ export default class CheapWatch extends EventEmitter {
 		// paths of all directories -> FSWatcher instances
 		this[_watchers] = new Map();
 		// paths of all files/dirs -> stats
-		this.files = new Map();
+		this.paths = new Map();
 		// paths of files with pending debounced events -> setTimeout timer ids
 		this[_timeouts] = new Map();
 		// queue of pending FSWatcher events to handle
@@ -86,7 +86,7 @@ export default class CheapWatch extends EventEmitter {
 			if (this.filter && !await this.filter({ path, stats })) {
 				return;
 			}
-			this.files.set(path, stats);
+			this.paths.set(path, stats);
 		}
 		if (stats.isDirectory()) {
 			if (this.watch) {
@@ -131,13 +131,13 @@ export default class CheapWatch extends EventEmitter {
 				if (this.filter && !await this.filter({ path, stats })) {
 					continue;
 				}
-				this.files.set(path, stats);
+				this.paths.set(path, stats);
 				this.emit('+', { path, stats });
 				if (stats.isDirectory() && !this[_watchers].has(path)) {
 					// note the new directory
 					// start watching it, and report any files in it
 					await this[_recurse](full);
-					for (const [newPath, stats] of this.files.entries()) {
+					for (const [newPath, stats] of this.paths.entries()) {
 						if (newPath.startsWith(path + '/')) {
 							this.emit('+', { path: newPath, stats });
 						}
@@ -145,10 +145,10 @@ export default class CheapWatch extends EventEmitter {
 				}
 			} catch (e) {
 				// check whether this is a deleted file/dir or just some FSWatcher artifact
-				if (this.files.has(path)) {
+				if (this.paths.has(path)) {
 					// note the deleted file/dir
-					const stats = this.files.get(path);
-					this.files.delete(path);
+					const stats = this.paths.get(path);
+					this.paths.delete(path);
 					this.emit('-', { path, stats });
 					if (this[_watchers].has(path)) {
 						// stop watching it, and report any files/dirs that were in it
@@ -158,10 +158,10 @@ export default class CheapWatch extends EventEmitter {
 								this[_watchers].delete(old);
 							}
 						}
-						for (const old of this.files.keys()) {
+						for (const old of this.paths.keys()) {
 							if (old.startsWith(path + '/')) {
-								const stats = this.files.get(old);
-								this.files.delete(old);
+								const stats = this.paths.get(old);
+								this.paths.delete(old);
 								this.emit('-', { path: old, stats });
 							}
 						}
