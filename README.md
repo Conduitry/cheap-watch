@@ -58,7 +58,7 @@ for (const [path, stats] of watch.paths) {
 	/* ... */
 }
 
-watch.on('+', ({ path, stats }) => { /* ... */ });
+watch.on('+', ({ path, stats, isNew }) => { /* ... */ });
 watch.on('-', ({ path, stats }) => { /* ... */ });
 ```
 
