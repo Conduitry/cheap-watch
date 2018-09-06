@@ -27,7 +27,7 @@
 	"bugs": {
 		"url": "https://github.com/Conduitry/cheap-watch/issues"
 	},
-	"homepage": "https://cndtr.io/cheap-watch/",
+	"homepage": "https://conduitry.io/cheap-watch",
 	"devDependencies": {
 		"rollup": "*"
 	},
