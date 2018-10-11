@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"removeComments": true,
+		"sourceMap": true,
+		"target": "esnext"
+	},
+	"include": ["src"]
+}

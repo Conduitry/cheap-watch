@@ -10,9 +10,8 @@
 		"watcher"
 	],
 	"main": "./dist/CheapWatch.cjs.js",
-	"module": "./CheapWatch.js",
+	"module": "./dist/CheapWatch.es.js",
 	"files": [
-		"CheapWatch.js",
 		"dist"
 	],
 	"engines": {
@@ -29,12 +28,16 @@
 	},
 	"homepage": "https://conduitry.io/cheap-watch",
 	"devDependencies": {
-		"rollup": "*"
+		"rollup": "*",
+		"typescript": "*",
+		"@types/node": "*"
 	},
 	"scripts": {
-		"build": "rollup -c",
+		"build": "tsc && rollup -c",
+		"dev": "rollup -cw",
+		"prepare": "npm run build",
+		"prepublishOnly": "npm test",
 		"pretest": "npm run build",
-		"test": "node test.js",
-		"prepublishOnly": "npm test"
+		"test": "node test.js"
 	}
 }
