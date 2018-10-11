@@ -1,3 +1,8 @@
+# v1.0.0
+
+- Internal rewrite in TypeScript
+- Git tag is now the built version, for easier direct installation without the npm registry
+
 # v0.3.0
 
 - Rename `.files` to `.paths`, as it contains directories, not just files
