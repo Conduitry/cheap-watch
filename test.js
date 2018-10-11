@@ -1,5 +1,3 @@
-/* eslint no-console: 0 */
-
 const CheapWatch = require('.');
 
 const assert = require('assert');
@@ -19,7 +17,7 @@ const rmdir =
 				exec(`rmdir /s /q ${path.replace(/\//g, '\\')} 2> nul`).catch(() => {})
 		: path => exec('rm -rf ' + path);
 
-const sleep = (ms = 100) => new Promise(res => setTimeout(res, ms));
+const sleep = (ms = 1000) => new Promise(res => setTimeout(res, ms));
 
 function getEvents(watch) {
 	const events = new Set();
