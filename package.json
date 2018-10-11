@@ -35,7 +35,6 @@
 	"scripts": {
 		"build": "tsc && rollup -c",
 		"dev": "rollup -cw",
-		"prepare": "npm run build",
 		"prepublishOnly": "npm test",
 		"pretest": "npm run build",
 		"test": "node test.js"
