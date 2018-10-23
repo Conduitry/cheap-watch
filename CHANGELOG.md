@@ -1,3 +1,7 @@
+# v1.0.1
+
+- Make sure we manually emit an event for a directory when one of its direct children is updated
+
 # v1.0.0
 
 - Internal rewrite in TypeScript
