@@ -92,15 +92,20 @@ export default class CheapWatch extends EventEmitter {
 
 	// handle FSWatcher event for given directory
 	private _handle(dir: string, event: Event, file: string): void {
-		const full = dir + '/' + file;
-		if (this._timeouts.has(full)) {
-			clearTimeout(this._timeouts.get(full));
+		this._debounce(dir);
+		this._debounce(dir + '/' + file);
+	}
+
+	// debounce and enqueue event for given path
+	private _debounce(path: string): void {
+		if (this._timeouts.has(path)) {
+			clearTimeout(this._timeouts.get(path));
 		}
 		this._timeouts.set(
-			full,
+			path,
 			setTimeout(() => {
-				this._timeouts.delete(full);
-				this._enqueue(full);
+				this._timeouts.delete(path);
+				this._enqueue(path);
 			}, this.debounce),
 		);
 	}
