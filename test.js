@@ -25,7 +25,7 @@ function getEvents(watch) {
 		const event = `${isNew ? 'new' : 'updated'} ${
 			stats.isFile() ? 'file' : ''
 		}${stats.isDirectory() ? 'directory' : ''} ${path}`;
-		if (events.has(event)) {
+		if (stats.isFile() && events.has(event)) {
 			throw new Error(`Duplicate event: ${event}`);
 		}
 		events.add(event);
@@ -34,7 +34,7 @@ function getEvents(watch) {
 		const event = `deleted ${stats.isFile() ? 'file' : ''}${
 			stats.isDirectory() ? 'directory' : ''
 		} ${path}`;
-		if (events.has(event)) {
+		if (stats.isFile() && events.has(event)) {
 			throw new Error(`Duplicate event: ${event}`);
 		}
 		events.add(event);
