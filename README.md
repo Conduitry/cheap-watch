@@ -1,6 +1,6 @@
 # Cheap Watch: If it works, why use something else?
 
-[![npm version](https://img.shields.io/npm/v/cheap-watch.svg?style=flat-square)](https://www.npmjs.com/package/cheap-watch)
+[![npm version](https://img.shields.io/npm/v/cheap-watch.svg?style=flat-square)](https://www.npmjs.com/package/cheap-watch) [![Build Status](https://travis-ci.org/Conduitry/cheap-watch.svg?branch=master)](https://travis-ci.org/Conduitry/cheap-watch)
 
 **Cheap Watch** is a small, simple, dependency-free, cross-platform file system watcher for Node.js 8+.
 
