@@ -91,7 +91,7 @@ export default class CheapWatch extends EventEmitter {
 	}
 
 	// handle FSWatcher event for given directory
-	private _handle(dir: string, event: Event, file: string): void {
+	private _handle(dir: string, event: string, file: string): void {
 		this._debounce(dir);
 		this._debounce(dir + '/' + file);
 	}
