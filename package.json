@@ -29,11 +29,12 @@
 	"homepage": "https://conduitry.io/cheap-watch",
 	"devDependencies": {
 		"rollup": "*",
+		"rollup-plugin-cheap-ts": "Conduitry/rollup-plugin-cheap-ts#semver:*",
 		"typescript": "*",
 		"@types/node": "*"
 	},
 	"scripts": {
-		"build": "tsc && rollup -c",
+		"build": "rollup -c",
 		"dev": "rollup -cw",
 		"prepare": "npm run build",
 		"prepublishOnly": "npm test",
