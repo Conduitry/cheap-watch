@@ -9,10 +9,12 @@
 		"watch",
 		"watcher"
 	],
-	"main": "./dist/CheapWatch.cjs.js",
-	"module": "./dist/CheapWatch.es.js",
+	"main": "dist/CheapWatch.cjs.js",
+	"module": "dist/CheapWatch.es.js",
+	"types": "types/CheapWatch.d.ts",
 	"files": [
-		"dist"
+		"dist",
+		"types"
 	],
 	"engines": {
 		"node": ">=8"
