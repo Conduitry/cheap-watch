@@ -1,3 +1,7 @@
+# v1.0.2
+
+- Include TypeScript declaration file (`.d.ts`)
+
 # v1.0.1
 
 - Make sure we manually emit an event for a directory when one of its direct children is updated
