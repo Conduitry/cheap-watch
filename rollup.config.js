@@ -11,6 +11,6 @@ export default {
 			sourcemap: true,
 			interop: false,
 		},
-		{ file: './dist/CheapWatch.es.js', format: 'es', sourcemap: true },
+		{ file: './dist/CheapWatch.esm.js', format: 'esm', sourcemap: true },
 	],
 };

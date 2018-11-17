@@ -10,7 +10,7 @@
 		"watcher"
 	],
 	"main": "dist/CheapWatch.cjs.js",
-	"module": "dist/CheapWatch.es.js",
+	"module": "dist/CheapWatch.esm.js",
 	"types": "types/CheapWatch.d.ts",
 	"files": [
 		"dist",
