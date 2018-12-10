@@ -64,6 +64,4 @@ watch.on('-', ({ path, stats }) => { /* ... */ });
 
 ## License
 
-Copyright (c) 2018 Conduitry
-
-- [MIT](LICENSE)
+[MIT](LICENSE)
