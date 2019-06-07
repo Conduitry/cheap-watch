@@ -134,9 +134,9 @@ export default class CheapWatch extends EventEmitter {
 					// note the new directory
 					// start watching it, and report any files in it
 					await this._recurse(full);
-					for (const [newPath, stats] of this.paths.entries()) {
-						if (newPath.startsWith(path + '/')) {
-							this.emit('+', { path: newPath, stats, isNew: true });
+					for (const [new_path, stats] of this.paths.entries()) {
+						if (new_path.startsWith(path + '/')) {
+							this.emit('+', { path: new_path, stats, isNew: true });
 						}
 					}
 				}
@@ -147,17 +147,17 @@ export default class CheapWatch extends EventEmitter {
 				this.emit('-', { path, stats });
 				if (this._watchers.has(path)) {
 					// stop watching it, and report any files/dirs that were in it
-					for (const old of this._watchers.keys()) {
-						if (old === path || old.startsWith(path + '/')) {
-							this._watchers.get(old).close();
-							this._watchers.delete(old);
+					for (const old_path of this._watchers.keys()) {
+						if (old_path === path || old_path.startsWith(path + '/')) {
+							this._watchers.get(old_path).close();
+							this._watchers.delete(old_path);
 						}
 					}
-					for (const old of this.paths.keys()) {
-						if (old.startsWith(path + '/')) {
-							const stats = this.paths.get(old);
-							this.paths.delete(old);
-							this.emit('-', { path: old, stats });
+					for (const old_path of this.paths.keys()) {
+						if (old_path.startsWith(path + '/')) {
+							const stats = this.paths.get(old_path);
+							this.paths.delete(old_path);
+							this.emit('-', { path: old_path, stats });
 						}
 					}
 				}

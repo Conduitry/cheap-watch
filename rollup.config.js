@@ -1,9 +1,9 @@
-import cheapTS from 'rollup-plugin-cheap-ts';
+import cheap_ts from 'rollup-plugin-cheap-ts';
 
 export default {
 	input: './src/CheapWatch',
 	external: name => /^[a-z]/.test(name),
-	plugins: [cheapTS()],
+	plugins: [cheap_ts()],
 	output: [
 		{
 			file: './dist/CheapWatch.cjs.js',
