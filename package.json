@@ -33,7 +33,7 @@
 		"rollup": "^1",
 		"rollup-plugin-cheap-ts": "Conduitry/rollup-plugin-cheap-ts#semver:^1",
 		"typescript": "^3",
-		"@types/node": "*"
+		"@types/node": "=8"
 	},
 	"scripts": {
 		"build": "rollup -c",
