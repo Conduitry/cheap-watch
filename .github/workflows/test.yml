@@ -1,0 +1,18 @@
+on: [push]
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: [8, 10, 12]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: |
+        npm install
+        npm test
+      env:
+        CI: true
