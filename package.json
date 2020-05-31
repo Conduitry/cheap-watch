@@ -28,7 +28,7 @@
 	"bugs": {
 		"url": "https://github.com/Conduitry/cheap-watch/issues"
 	},
-	"homepage": "https://cndtr.dev/cheap-watch",
+	"homepage": "https://conduitry.dev/cheap-watch",
 	"devDependencies": {
 		"rollup": "^2",
 		"rollup-plugin-cheap-ts": "Conduitry/rollup-plugin-cheap-ts#semver:^1",
