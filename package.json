@@ -30,7 +30,7 @@
 	},
 	"homepage": "https://cndtr.dev/cheap-watch",
 	"devDependencies": {
-		"rollup": "^1",
+		"rollup": "^2",
 		"rollup-plugin-cheap-ts": "Conduitry/rollup-plugin-cheap-ts#semver:^1",
 		"typescript": "^3",
 		"@types/node": "=8"
