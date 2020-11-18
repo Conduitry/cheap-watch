@@ -1,3 +1,7 @@
+# v1.0.3
+
+- Fix published types
+
 # v1.0.2
 
 - Include TypeScript declaration file (`.d.ts`)
