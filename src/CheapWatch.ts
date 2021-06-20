@@ -126,6 +126,12 @@ export default class CheapWatch extends EventEmitter {
 					continue;
 				}
 				const isNew = !this.paths.has(path);
+				if (!isNew) {
+				  const lastStat = this.paths.get(path)
+				  if (String(lastStat.mtime) === String(stats.mtime)) {
+				    continue
+				  }
+				}
 				this.paths.set(path, stats);
 				if (path) {
 					this.emit('+', { path, stats, isNew });
