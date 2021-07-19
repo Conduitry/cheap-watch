@@ -9,8 +9,9 @@
 		"watch",
 		"watcher"
 	],
-	"main": "dist/CheapWatch.cjs.js",
-	"module": "dist/CheapWatch.esm.js",
+	"type": "module",
+	"main": "dist/CheapWatch.cjs",
+	"module": "dist/CheapWatch.mjs",
 	"types": "types/CheapWatch.d.ts",
 	"files": [
 		"dist",
@@ -30,10 +31,10 @@
 	},
 	"homepage": "https://conduitry.dev/cheap-watch",
 	"devDependencies": {
+		"@types/node": "=8",
 		"rollup": "^2",
-		"rollup-plugin-cheap-ts": "Conduitry/rollup-plugin-cheap-ts#semver:^1",
-		"typescript": "^3",
-		"@types/node": "=8"
+		"rollup-plugin-typescript2": "^0.30.0",
+		"typescript": "^3"
 	},
 	"scripts": {
 		"build": "rollup -c",

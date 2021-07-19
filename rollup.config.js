@@ -1,16 +1,16 @@
-import cheap_ts from 'rollup-plugin-cheap-ts';
+import typescript2 from 'rollup-plugin-typescript2';
 
 export default {
 	input: './src/CheapWatch',
 	external: name => /^[a-z]/.test(name),
-	plugins: [cheap_ts()],
+	plugins: [typescript2()],
 	output: [
 		{
-			file: './dist/CheapWatch.cjs.js',
+			file: './dist/CheapWatch.cjs',
 			format: 'cjs',
 			sourcemap: true,
 			interop: false,
 		},
-		{ file: './dist/CheapWatch.esm.js', format: 'esm', sourcemap: true },
+		{ file: './dist/CheapWatch.mjs', format: 'es', sourcemap: true },
 	],
 };
