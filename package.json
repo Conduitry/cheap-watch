@@ -31,10 +31,10 @@
 	},
 	"homepage": "https://conduitry.dev/cheap-watch",
 	"devDependencies": {
-		"@types/node": "=8",
-		"rollup": "^2",
+		"@types/node": "^16",
+		"rollup": "^2.53.2",
 		"rollup-plugin-typescript2": "^0.30.0",
-		"typescript": "^3"
+		"typescript": "^4.3.5"
 	},
 	"scripts": {
 		"build": "rollup -c",
