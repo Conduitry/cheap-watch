@@ -10,6 +10,7 @@ export default {
 			format: 'cjs',
 			sourcemap: true,
 			interop: false,
+			exports: 'auto'
 		},
 		{ file: './dist/CheapWatch.mjs', format: 'es', sourcemap: true },
 	],
