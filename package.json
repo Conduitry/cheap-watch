@@ -31,9 +31,9 @@
 	},
 	"homepage": "https://conduitry.dev/cheap-watch",
 	"devDependencies": {
+		"@rollup/plugin-typescript": "^8.2.3",
 		"@types/node": "^16",
 		"rollup": "^2.53.3",
-		"rollup-plugin-typescript2": "^0.30.0",
 		"typescript": "^4.3.5"
 	},
 	"scripts": {

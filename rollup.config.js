@@ -1,9 +1,9 @@
-import typescript2 from 'rollup-plugin-typescript2';
+import typescript from '@rollup/plugin-typescript';
 
 export default {
 	input: './src/CheapWatch.ts',
 	external: name => /^[a-z]/.test(name),
-	plugins: [typescript2()],
+	plugins: [typescript()],
 	output: [
 		{
 			file: './dist/CheapWatch.cjs',
