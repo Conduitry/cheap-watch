@@ -1,3 +1,7 @@
+# v1.0.4
+
+- Fix ESM build by using named `EventEmitter` export
+
 # v1.0.3
 
 - Fix published types
